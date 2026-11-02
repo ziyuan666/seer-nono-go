@@ -8,7 +8,7 @@
 ## 素材管线
 
 - [FFDec（JPEXS Free Flash Decompiler）](https://github.com/jindrapetrik/jpexs-decompiler)：SWF 导出与反编译。下载后解压至 `toolchain/ffdec/`，脚本默认引用 `toolchain/ffdec/ffdec-cli.jar`。
-- `nono_deskpet/tools/`：帧烘焙、图标生成、发布打包（`pack_zip.py`）等脚本。脚本内引用的 SWF 源文件不在本仓库内，路径按需修改。
+- `nono_deskpet/tools/`：帧烘焙、图标生成、发布打包（`pack_zip.py`）等脚本。原始 SWF 素材在 `assets_src/`。
 - `swf_tools/`：SWF 查看器与播放器生成脚本。
 - `tools/`：气泡预览脚本。
 

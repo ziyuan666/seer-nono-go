@@ -28,13 +28,14 @@ cd nono_deskpet
 | `nono_deskpet_vec/` | 矢量渲染库（SWF → 光栅化；经 go.mod `replace` 引用，须与主程序保持同级目录） |
 | `tools/`、`nono_deskpet/tools/` | 素材管线与辅助脚本（Python） |
 | `swf_tools/` | SWF 查看器等辅助工具 |
+| `assets_src/` | NONO 原始 SWF 素材（素材管线的源文件） |
 
 ## 素材管线（可选）
 
 仓库内 `nono_deskpet/assets/` 已含全部运行时素材，直接构建即可。如需从 SWF 重新导出：
 
 1. 下载 [FFDec（JPEXS Free Flash Decompiler）](https://github.com/jindrapetrik/jpexs-decompiler/releases)，解压到 `toolchain/ffdec/`；
-2. 运行 `nono_deskpet/tools/` 下对应脚本（脚本内路径为仓库相对路径，SWF 源文件不在仓库内，按需修改）。
+2. 运行 `nono_deskpet/tools/` 下对应脚本（原始 SWF 素材已随仓库提供，见 `assets_src/`）。
 
 ## 说明
 
