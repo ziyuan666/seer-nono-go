@@ -1,0 +1,56 @@
+{
+  "key": "annual",
+  "zoom": 4,
+  "canvas": {
+    "w": 348,
+    "h": 350
+  },
+  "dirs": {
+    "down": 7,
+    "leftdown": 7,
+    "left": 7,
+    "leftup": 7,
+    "up": 7,
+    "rightup": 7,
+    "right": 7,
+    "rightdown": 7
+  },
+  "layers": [
+    {
+      "name": "foot_2",
+      "dx": 0,
+      "dy": 0,
+      "err": 0.0
+    },
+    {
+      "name": "foot",
+      "dx": 0,
+      "dy": 0,
+      "err": 0.0
+    },
+    {
+      "name": "body",
+      "dx": 0,
+      "dy": 0,
+      "err": 0.0
+    },
+    {
+      "name": "color_1",
+      "dx": 0,
+      "dy": 0,
+      "err": 0.0
+    },
+    {
+      "name": "shape_137",
+      "dx": 0,
+      "dy": 0,
+      "err": 0.0
+    }
+  ],
+  "ball": 99,
+  "idle_frames": 7,
+  "ballc": [
+    192.308,
+    200.724
+  ]
+}

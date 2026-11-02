@@ -1,0 +1,38 @@
+{
+  "key": "plain",
+  "zoom": 4,
+  "canvas": {
+    "w": 234,
+    "h": 265
+  },
+  "dirs": {
+    "down": 17,
+    "leftdown": 17,
+    "left": 17,
+    "leftup": 17,
+    "up": 17,
+    "rightup": 17,
+    "right": 17,
+    "rightdown": 17
+  },
+  "layers": [
+    {
+      "name": "color_2",
+      "dx": 0,
+      "dy": 0,
+      "err": 3.84
+    },
+    {
+      "name": "body",
+      "dx": 44,
+      "dy": 32,
+      "err": 4.98
+    }
+  ],
+  "ball": 99,
+  "idle_frames": 17,
+  "ballc": [
+    102,
+    115
+  ]
+}

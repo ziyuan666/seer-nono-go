@@ -1,0 +1,44 @@
+{
+  "key": "super4",
+  "zoom": 4,
+  "canvas": {
+    "w": 571,
+    "h": 430
+  },
+  "dirs": {
+    "down": 17,
+    "leftdown": 17,
+    "left": 17,
+    "leftup": 17,
+    "up": 17,
+    "rightup": 17,
+    "right": 17,
+    "rightdown": 17
+  },
+  "layers": [
+    {
+      "name": "color_1",
+      "dx": 160,
+      "dy": 128,
+      "err": 0.0
+    },
+    {
+      "name": "body",
+      "dx": 162,
+      "dy": 60,
+      "err": 30.59
+    },
+    {
+      "name": "color_2",
+      "dx": 88,
+      "dy": 10,
+      "err": 0.0
+    }
+  ],
+  "ball": 99,
+  "idle_frames": 17,
+  "ballc": [
+    271,
+    186
+  ]
+}

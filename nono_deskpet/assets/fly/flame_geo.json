@@ -1,0 +1,280 @@
+{
+ "1": {
+  "down": {
+   "has": true,
+   "ndx": -0.2287,
+   "ndy": -0.3578,
+   "nw": 0.4571,
+   "nh": 0.5435,
+   "rot": 7.11,
+   "src": "swf/sprite.json"
+  },
+  "leftdown": {
+   "has": true,
+   "ndx": -0.2287,
+   "ndy": -0.3578,
+   "nw": 0.4571,
+   "nh": 0.5435,
+   "rot": 7.11,
+   "src": "swf/sprite.json"
+  },
+  "left": {
+   "has": true,
+   "ndx": -0.1132,
+   "ndy": -0.3715,
+   "nw": 0.6499,
+   "nh": 0.7728,
+   "rot": 7.11,
+   "src": "swf/sprite.json"
+  },
+  "leftup": {
+   "has": true,
+   "ndx": -0.1,
+   "ndy": -0.3715,
+   "nw": 0.6723,
+   "nh": 0.7993,
+   "rot": 7.11,
+   "src": "swf/sprite.json"
+  },
+  "up": {
+   "has": true,
+   "ndx": -0.1501,
+   "ndy": -0.3705,
+   "nw": 0.5879,
+   "nh": 0.699,
+   "rot": 7.11,
+   "src": "swf/sprite.json"
+  },
+  "rightup": {
+   "has": true,
+   "ndx": 0.8423,
+   "ndy": -0.3715,
+   "nw": 0.6723,
+   "nh": 0.7993,
+   "rot": 7.11,
+   "src": "swf/sprite.json"
+  },
+  "right": {
+   "has": true,
+   "ndx": 0.7795,
+   "ndy": -0.3715,
+   "nw": 0.5202,
+   "nh": 0.6185,
+   "rot": 7.11,
+   "src": "swf/sprite.json"
+  },
+  "rightdown": {
+   "has": true,
+   "ndx": 0.8206,
+   "ndy": -0.3721,
+   "nw": 0.6708,
+   "nh": 0.7976,
+   "rot": 7.11,
+   "src": "swf/sprite.json"
+  }
+ },
+ "2": {
+  "down": {
+   "has": true,
+   "ndx": 0.0301,
+   "ndy": -0.4138,
+   "nw": 0.358,
+   "nh": 0.4395,
+   "rot": -9.86,
+   "src": "swf/sprite.json"
+  },
+  "leftdown": {
+   "has": true,
+   "ndx": -0.174,
+   "ndy": -0.5914,
+   "nw": 0.5472,
+   "nh": 0.3934,
+   "rot": 50.14,
+   "src": "swf/sprite.json"
+  },
+  "left": {
+   "has": true,
+   "ndx": -0.1443,
+   "ndy": -0.1252,
+   "nw": 0.5129,
+   "nh": 0.4542,
+   "rot": 80.14,
+   "src": "swf/sprite.json"
+  },
+  "leftup": {
+   "has": true,
+   "ndx": -0.462,
+   "ndy": -0.0996,
+   "nw": 0.3936,
+   "nh": 0.5677,
+   "rot": 125.15,
+   "src": "swf/sprite.json"
+  },
+  "up": {
+   "has": true,
+   "ndx": -0.4144,
+   "ndy": -0.002,
+   "nw": 0.3568,
+   "nh": 0.4029,
+   "rot": 170.14,
+   "src": "swf/sprite.json"
+  },
+  "rightup": {
+   "has": true,
+   "ndx": 0.462,
+   "ndy": -0.0996,
+   "nw": 0.3936,
+   "nh": 0.5677,
+   "rot": 54.85,
+   "src": "swf/sprite.json"
+  },
+  "right": {
+   "has": true,
+   "ndx": 0.1443,
+   "ndy": -0.1252,
+   "nw": 0.5129,
+   "nh": 0.4542,
+   "rot": 99.86,
+   "src": "swf/sprite.json"
+  },
+  "rightdown": {
+   "has": true,
+   "ndx": 0.174,
+   "ndy": -0.5914,
+   "nw": 0.5472,
+   "nh": 0.3934,
+   "rot": 129.85,
+   "src": "swf/sprite.json"
+  }
+ },
+ "3": {
+  "down": {
+   "has": true,
+   "ndx": -0.1132,
+   "ndy": -0.362,
+   "nw": 0.6605,
+   "nh": 0.7853,
+   "rot": 7.11,
+   "src": "swf/sprite.json"
+  },
+  "leftdown": {
+   "has": true,
+   "ndx": -0.1522,
+   "ndy": -0.3711,
+   "nw": 0.597,
+   "nh": 0.7098,
+   "rot": 7.11,
+   "src": "swf/sprite.json"
+  },
+  "left": {
+   "has": true,
+   "ndx": -0.186,
+   "ndy": -0.3694,
+   "nw": 0.5405,
+   "nh": 0.6427,
+   "rot": 7.11,
+   "src": "swf/sprite.json"
+  },
+  "leftup": {
+   "has": true,
+   "ndx": -0.0989,
+   "ndy": -0.3694,
+   "nw": 0.6551,
+   "nh": 0.7788,
+   "rot": 7.11,
+   "src": "swf/sprite.json"
+  },
+  "up": {
+   "has": true,
+   "ndx": -0.1128,
+   "ndy": -0.3629,
+   "nw": 0.6611,
+   "nh": 0.7861,
+   "rot": 7.11,
+   "src": "swf/sprite.json"
+  },
+  "rightup": {
+   "has": true,
+   "ndx": 0.8581,
+   "ndy": -0.3653,
+   "nw": 0.6551,
+   "nh": 0.7788,
+   "rot": 7.11,
+   "src": "swf/sprite.json"
+  },
+  "right": {
+   "has": true,
+   "ndx": 0.814,
+   "ndy": -0.3694,
+   "nw": 0.5405,
+   "nh": 0.6427,
+   "rot": 7.11,
+   "src": "swf/sprite.json"
+  },
+  "rightdown": {
+   "has": true,
+   "ndx": 0.8543,
+   "ndy": -0.3653,
+   "nw": 0.597,
+   "nh": 0.7098,
+   "rot": 7.11,
+   "src": "swf/sprite.json"
+  }
+ },
+ "4": {
+  "down": {
+   "has": true,
+   "ndx": -0.2246,
+   "ndy": -0.8037,
+   "nw": 0.3593,
+   "nh": 0.4619,
+   "rot": -13.43,
+   "src": "swf/sprite.json"
+  },
+  "leftdown": {
+   "has": true,
+   "ndx": -0.1283,
+   "ndy": -0.5388,
+   "nw": 0.403,
+   "nh": 0.3283,
+   "rot": 23.27,
+   "src": "swf/sprite.json"
+  },
+  "left": {
+   "has": true,
+   "ndx": -0.2622,
+   "ndy": -0.3103,
+   "nw": 0.3787,
+   "nh": 0.3199,
+   "rot": 83.27,
+   "src": "swf/sprite.json"
+  },
+  "leftup": {
+   "has": false
+  },
+  "up": {
+   "has": false
+  },
+  "rightup": {
+   "has": false
+  },
+  "right": {
+   "has": true,
+   "ndx": 0.2507,
+   "ndy": -0.2891,
+   "nw": 0.3787,
+   "nh": 0.3199,
+   "rot": 96.73,
+   "src": "swf/sprite.json"
+  },
+  "rightdown": {
+   "has": true,
+   "ndx": 0.4383,
+   "ndy": -0.7936,
+   "nw": 0.3197,
+   "nh": 0.4233,
+   "rot": -51.73,
+   "src": "swf/sprite.json"
+  }
+ }
+}

@@ -1,0 +1,14 @@
+# 20261102-01 · 可再生产物不入库（源码+素材+变更工程全量保留）
+# 发布包 dist/ 可用 tools/pack_zip.py 重建；根目录 zip 为历史发布包
+/nono_deskpet/dist/
+/nono_deskpet/*.zip
+/nono_deskpet/*.exe
+/nono_deskpet/save.json
+/nono_deskpet/*.log
+__pycache__/
+*.pyc
+# 20261102-02 · GitHub 单文件 100MB 硬限制：123MB 旧 PNG 留档 tar 已从 git 历史剔除
+# （filter-branch ×2：历史里曾有 存档/旧PNG留档/ 与 旧PNG留档/ 两个路径，同名 blob）。
+# 文件保留在磁盘上述两路径；另有 nono_deskpet/dist/legacy_png_assets.tar.gz.bak 备份。
+# 裸文件名模式 = 任何目录下的同名文件都不入库。
+legacy_png_assets.tar.gz

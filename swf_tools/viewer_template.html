@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>赛尔号 SWF 逐帧播放器</title>
+<style>
+  :root { color-scheme: dark; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:#1b1e24; color:#d8dee9; overflow:hidden;
+         font:13px/1.5 -apple-system,"Segoe UI","Microsoft YaHei",sans-serif;
+         display:flex; flex-direction:column; height:100vh; }
+
+  /* ---------- 顶栏 ---------- */
+  #top { display:flex; align-items:center; gap:10px; padding:8px 14px; background:#22262e;
+         border-bottom:1px solid #2f3540; flex-wrap:wrap; font-size:12px; }
+  #top .k { color:#7d8794; }
+  #top .v { color:#cfd8e3; font-variant-numeric:tabular-nums; }
+  #top .sep { width:1px; height:16px; background:#3c4450; }
+  select { background:#2f3540; color:#d8dee9; border:1px solid #3c4450; border-radius:5px;
+           padding:3px 6px; font-size:12px; max-width:280px; }
+
+  /* ---------- 舞台 ---------- */
+  #stage { flex:1; display:flex; overflow:auto; align-items:safe center;
+           justify-content:safe center; position:relative;
+           background:
+             linear-gradient(45deg,#23262d 25%,transparent 25%) 0 0/24px 24px,
+             linear-gradient(-45deg,#23262d 25%,transparent 25%) 0 12px/24px 24px,
+             linear-gradient(45deg,transparent 75%,#23262d 75%) 12px -12px/24px 24px,
+             linear-gradient(-45deg,transparent 75%,#23262d 75%) -12px 0/24px 24px,
+             #1b1e24; }
+  #wrap { padding:16px; flex-shrink:0; }
+  canvas { display:block; flex-shrink:0; }
+
+  /* ---------- 拖放 / 空状态 ---------- */
+  #drop { position:absolute; inset:0; display:flex; flex-direction:column;
+          align-items:center; justify-content:center; gap:14px; cursor:pointer;
+          color:#8b96a3; transition:background .15s; }
+  #drop.hot { background:#24303a; color:#9fd3f0; }
+  #drop b { font-size:20px; color:#cfd8e3; font-weight:600; }
+  #drop small { font-size:12px; }
+  #drop .box { border:2px dashed #3c4450; border-radius:14px; padding:38px 56px;
+               text-align:center; line-height:1.9; }
+  #drop.hot .box { border-color:#4c7899; }
+
+  /* ---------- 底栏 ---------- */
+  #bar { display:flex; gap:8px; align-items:center; padding:9px 14px; background:#22262e;
+         border-top:1px solid #2f3540; flex-wrap:wrap; }
+  button { background:#2f3540; color:#d8dee9; border:1px solid #3c4450; border-radius:6px;
+           padding:5px 11px; cursor:pointer; font-size:13px; }
+  button:hover:not(:disabled) { background:#3a4150; }
+  button:disabled { opacity:.4; cursor:default; }
+  button.primary { background:#4c7899; border-color:#5d8dad; color:#fff; }
+  input[type=range] { accent-color:#4c7899; }
+  #seek { flex:1; min-width:160px; }
+  #info { font-variant-numeric:tabular-nums; color:#9aa5b1; min-width:112px; text-align:right; }
+  #zoom { width:120px; }
+  #zoomval { min-width:46px; text-align:right; color:#9aa5b1; font-variant-numeric:tabular-nums; }
+  label { color:#9aa5b1; display:flex; align-items:center; gap:5px; }
+  .sep { width:1px; height:20px; background:#3c4450; }
+  #msg { color:#e07070; font-size:12px; }
+
+  /* ---------- 遮罩 ---------- */
+  #busy { position:fixed; inset:0; background:rgba(20,23,28,.85); display:none;
+          align-items:center; justify-content:center; flex-direction:column; gap:12px; z-index:9; }
+  #busy.on { display:flex; }
+  .spin { width:34px; height:34px; border:3px solid #3c4450; border-top-color:#4c7899;
+          border-radius:50%; animation:sp 1s linear infinite; }
+  @keyframes sp { to { transform:rotate(360deg); } }
+</style>
+</head>
+<body>
+
+<div id="top" style="display:none">
+  <span class="k">文件</span><span class="v" id="vfile">—</span>
+  <div class="sep"></div>
+  <span class="k">舞台</span><span class="v" id="vstage">—</span>
+  <div class="sep"></div>
+  <span class="k">帧率</span><span class="v" id="vfps">—</span>
+  <div class="sep"></div>
+  <span class="k">时间轴</span><select id="vclip"></select>
+  <div class="sep"></div>
+  <span class="k">帧数</span><span class="v" id="vframes">—</span>
+  <div class="sep"></div>
+  <button id="btnfile">换个文件…</button>
+</div>
+
+<div id="stage">
+  <div id="wrap" style="display:none"><canvas id="cv"></canvas></div>
+  <div id="drop">
+    <div class="box">
+      <b>拖入赛尔号 SWF</b><br>
+      <small>或点击这里选择文件</small>
+    </div>
+    <small>支持 FWS / CWS(zlib)；ZWS(LZMA) 需先另存</small>
+    <input type="file" id="file" accept=".swf" hidden>
+  </div>
+</div>
+
+<div id="bar" style="display:none">
+  <button id="first" title="首帧 (Home)">|◀</button>
+  <button id="prev" title="上一帧 (←)">◀</button>
+  <button id="play" class="primary" title="播放/暂停 (空格)">▶ 播放</button>
+  <button id="next" title="下一帧 (→)">▶</button>
+  <button id="last" title="末帧 (End)">▶|</button>
+  <div class="sep"></div>
+  <input type="range" id="seek" min="0" max="0" value="0">
+  <span id="info">— / —</span>
+  <div class="sep"></div>
+  <label><input type="checkbox" id="loop" checked> 循环</label>
+  <label>缩放 <input type="range" id="zoom" min="10" max="800" value="100"></label>
+  <span id="zoomval">100%</span>
+  <button id="fit">适应</button>
+  <button id="export">导出 PNG</button>
+  <span id="msg"></span>
+</div>
+
+<div id="busy"><div class="spin"></div><div id="busytxt">解析中…</div></div>
+
+<script>
+/*__SWFCORE__*/
+</script>
+<script>
+'use strict';
+const $ = (id) => document.getElementById(id);
+const cv = $('cv'), ctx = cv.getContext('2d');
+
+let swf = null;          // 解析结果
+let clip = null;         // { tl, name, nframes }
+let cur = 0, zoom = 1, playing = false, timer = null;
+let BOX = [0, 0, 100, 100];
+let pathsCache = new Map();   // cid -> [{path: Path2D, ...}]
+let frameCache = new Map();   // tick -> 展开后的对象数组
+let FB = new Map();           // tick -> 当前帧内容 bbox
+
+// ---------------- 载入 ----------------
+async function inflateBytes(u8) {
+  const ds = new DecompressionStream('deflate');
+  const stream = new Blob([u8]).stream().pipeThrough(ds);
+  return new Uint8Array(await new Response(stream).arrayBuffer());
+}
+
+async function loadFile(file) {
+  showBusy('读取 ' + file.name + ' …');
+  try {
+    let buf = new Uint8Array(await file.arrayBuffer());
+    const sig = String.fromCharCode(buf[0], buf[1], buf[2]);
+    if (sig === 'CWS') {
+      showBusy('解压中…');
+      buf = concatBytes(buf.subarray(0, 8), await inflateBytes(buf.subarray(8)));
+    } else if (sig === 'ZWS') {
+      throw new Error('ZWS(LZMA) 压缩暂不支持，用 FFDec 另存为未压缩或 zlib 版');
+    } else if (sig !== 'FWS') {
+      throw new Error('不是 SWF 文件');
+    }
+    showBusy('解析显示列表…');
+    await tick0();
+    swf = SwfCore.parseSWF(buf);
+    if (!swf.shapes.size && !swf.sprites.size) throw new Error('没找到图形定义');
+
+    $('vfile').textContent = file.name;
+    $('vstage').textContent = Math.round(swf.width) + '×' + Math.round(swf.height);
+    $('vfps').textContent = swf.fps.toFixed(2).replace(/\.?0+$/, '');
+
+    const opts = [];
+    const pick = SwfCore.pickPlayable(swf);
+    opts.push(pick);
+    // 其它可切换的子时间轴（帧数 > 1）
+    for (const [sid, tl] of swf.sprites) {
+      if (tl.nframes > 1 && tl !== pick.tl) opts.push({ tl, name: 'sprite ' + sid, nframes: tl.nframes });
+    }
+    if (swf.root.nframes > 1 && pick.tl !== swf.root) {
+      opts.unshift({ tl: swf.root, name: 'root', nframes: swf.root.nframes });
+    }
+    const sel = $('vclip');
+    sel.innerHTML = '';
+    opts.forEach((o, i) => {
+      const op = document.createElement('option');
+      op.value = i;
+      op.textContent = o.name + ' (' + o.nframes + ' 帧)';
+      sel.appendChild(op);
+    });
+    sel._opts = opts;
+
+    $('drop').style.display = 'none';
+    $('wrap').style.display = 'block';
+    $('top').style.display = 'flex';
+    $('bar').style.display = 'flex';
+
+    useClip(opts[0]);
+  } catch (e) {
+    alert('解析失败：' + e.message);
+    console.error(e);
+    $('drop').style.display = 'flex';
+  } finally {
+    hideBusy();
+  }
+}
+
+function concatBytes(a, b) {
+  const out = new Uint8Array(a.length + b.length);
+  out.set(a, 0); out.set(b, a.length);
+  return out;
+}
+
+function useClip(c) {
+  clip = c;
+  cur = 0;
+  frameCache.clear(); FB.clear(); pathsCache.clear();
+  $('vframes').textContent = c.nframes;
+  $('seek').max = Math.max(0, c.nframes - 1);
+  $('seek').value = 0;
+  showBusy('计算画布范围…');
+  setTimeout(() => {
+    BOX = computeBox();
+    render();
+    hideBusy();
+    doFit();
+  }, 10);
+}
+
+// ---------------- 帧展开 ----------------
+function frameObjects(i) {
+  const key = i;
+  let v = frameCache.get(key);
+  if (!v) {
+    v = [];
+    SwfCore.flatten(swf, clip.tl, i, [1, 0, 0, 1, 0, 0], 1, v);
+    frameCache.set(key, v);
+    if (frameCache.size > 900) frameCache.clear();
+  }
+  return v;
+}
+
+function shapePaths(cid) {
+  let v = pathsCache.get(cid);
+  if (v) return v;
+  const def = swf.shapes.get(cid);
+  if (!def) return null;
+  let info;
+  try {
+    info = SwfCore.parseShapeDef(def.payload, def.tag);
+  } catch (e) {
+    console.warn('shape', cid, e.message);
+    info = { paths: [] };
+  }
+  v = info.paths.map((p) => ({
+    path: new Path2D(p.d),
+    fill: p.fill, fa: p.fa, grad: p.grad, rule: p.rule === 'nonzero' ? 'nonzero' : 'evenodd',
+    stroke: p.stroke, sw: p.sw, sa: p.sa,
+  }));
+  pathsCache.set(cid, v);
+  return v;
+}
+
+function compoundBounds(cid) {
+  const def = swf.shapes.get(cid);
+  if (!def) return null;
+  if (!def._b) def._b = SwfCore.parseShapeDef(def.payload, def.tag).bounds;
+  return def._b;
+}
+
+// 画布按「全部帧内容的并集」定尺寸：固定后播放不抖，单帧内容只占其中一块
+function computeBox() {
+  let x0 = 1e9, y0 = 1e9, x1 = -1e9, y1 = -1e9;
+  const n = clip.nframes;
+  const step = n > 900 ? Math.ceil(n / 900) : 1;
+  const frames = [];
+  for (let i = 0; i < n; i += step) frames.push(i);
+  if (frames[frames.length - 1] !== n - 1) frames.push(n - 1);
+
+  for (const i of frames) {
+    for (const o of frameObjects(i)) {
+      const b = compoundBounds(o.s);
+      if (!b) continue;
+      const m = o.m;
+      const pts = [[b[0], b[2]], [b[1], b[2]], [b[0], b[3]], [b[1], b[3]]];
+      for (const [px, py] of pts) {
+        const X = m[0] * px + m[2] * py + m[4];
+        const Y = m[1] * px + m[3] * py + m[5];
+        if (X < x0) x0 = X; if (X > x1) x1 = X;
+        if (Y < y0) y0 = Y; if (Y > y1) y1 = Y;
+      }
+    }
+  }
+  if (x0 > x1) return [0, 0, swf.width || 200, swf.height || 200];
+  const pad = 6;
+  return [x0 - pad, y0 - pad, x1 - x0 + pad * 2, y1 - y0 + pad * 2];
+}
+
+function frameBox(i) {
+  if (FB.has(i)) return FB.get(i);
+  let x0 = 1e9, y0 = 1e9, x1 = -1e9, y1 = -1e9;
+  for (const o of frameObjects(i)) {
+    const b = compoundBounds(o.s);
+    if (!b) continue;
+    const m = o.m;
+    for (const [px, py] of [[b[0], b[2]], [b[1], b[2]], [b[0], b[3]], [b[1], b[3]]]) {
+      const X = m[0] * px + m[2] * py + m[4];
+      const Y = m[1] * px + m[3] * py + m[5];
+      if (X < x0) x0 = X; if (X > x1) x1 = X;
+      if (Y < y0) y0 = Y; if (Y > y1) y1 = Y;
+    }
+  }
+  if (x0 > x1) { x0 = BOX[0]; y0 = BOX[1]; x1 = BOX[0] + BOX[2]; y1 = BOX[1] + BOX[3]; }
+  FB.set(i, [x0, y0, x1, y1]);
+  return [x0, y0, x1, y1];
+}
+
+// ---------------- 渲染 ----------------
+function render() {
+  const w = Math.max(1, Math.ceil(BOX[2] * zoom));
+  const h = Math.max(1, Math.ceil(BOX[3] * zoom));
+  if (cv.width !== w || cv.height !== h) {
+    cv.width = w; cv.height = h;
+    cv.style.width = w + 'px'; cv.style.height = h + 'px';
+  }
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  ctx.clearRect(0, 0, w, h);
+
+  for (const o of frameObjects(cur)) {
+    const list = shapePaths(o.s);
+    if (!list || !list.length) continue;
+    const m = o.m;
+    for (const it of list) {
+      ctx.save();
+      ctx.setTransform(m[0] * zoom, m[1] * zoom, m[2] * zoom, m[3] * zoom,
+                       (m[4] - BOX[0]) * zoom, (m[5] - BOX[1]) * zoom);
+      if (it.fill !== undefined) {
+        ctx.globalAlpha = o.a * (it.fa !== undefined ? it.fa : 1);
+        ctx.fillStyle = it.fill;
+        ctx.fill(it.path, it.rule);
+      }
+      if (it.stroke) {
+        ctx.globalAlpha = o.a * (it.sa !== undefined ? it.sa : 1);
+        ctx.strokeStyle = it.stroke;
+        ctx.lineWidth = it.sw || 1;
+        ctx.stroke(it.path);
+      }
+      ctx.restore();
+    }
+  }
+  $('seek').value = cur;
+  $('info').textContent = (cur + 1) + ' / ' + clip.nframes + ' 帧';
+}
+
+function go(i) {
+  cur = Math.max(0, Math.min(clip.nframes - 1, i));
+  render();
+}
+
+function doFit() {
+  const r = $('stage').getBoundingClientRect();
+  const z = Math.min(8, Math.min((r.width - 48) / BOX[2], (r.height - 48) / BOX[3]));
+  setZoom(z);
+}
+
+function setZoom(z) {
+  zoom = Math.max(0.1, Math.min(8, z));
+  $('zoom').value = Math.round(zoom * 100);
+  $('zoomval').textContent = Math.round(zoom * 100) + '%';
+  render();
+  focusContent();
+}
+
+// 画布按全帧并集，放大后当前帧可能不在视口内 —— 主动滚过去
+function focusContent() {
+  const st = $('stage');
+  if (st.scrollWidth <= st.clientWidth && st.scrollHeight <= st.clientHeight) return;
+  const fb = frameBox(cur);
+  const cx = ((fb[0] + fb[2]) / 2 - BOX[0]) * zoom;
+  const cy = ((fb[1] + fb[3]) / 2 - BOX[1]) * zoom;
+  const cr = cv.getBoundingClientRect(), sr = st.getBoundingClientRect();
+  const offX = cr.left - sr.left + st.scrollLeft;
+  const offY = cr.top - sr.top + st.scrollTop;
+  st.scrollLeft = Math.max(0, offX + cx - st.clientWidth / 2);
+  st.scrollTop = Math.max(0, offY + cy - st.clientHeight / 2);
+}
+
+// ---------------- 播放 ----------------
+function play() {
+  if (playing || !clip) return;
+  if (cur >= clip.nframes - 1) cur = 0;
+  playing = true;
+  $('play').textContent = '⏸ 暂停';
+  const ms = 1000 / (swf.fps || 25);
+  timer = setInterval(() => {
+    if (cur >= clip.nframes - 1) {
+      if ($('loop').checked) { go(0); return; }
+      pause(); return;
+    }
+    go(cur + 1);
+  }, ms);
+}
+function pause() {
+  playing = false;
+  clearInterval(timer); timer = null;
+  $('play').textContent = '▶ 播放';
+}
+
+// ---------------- 事件 ----------------
+$('drop').onclick = () => $('file').click();
+$('btnfile').onclick = () => $('file').click();
+$('file').onchange = (e) => { if (e.target.files[0]) loadFile(e.target.files[0]); };
+$('vclip').onchange = (e) => {
+  pause();
+  const o = e.target._opts[+e.target.value];
+  if (o) useClip(o);
+};
+$('play').onclick = () => (playing ? pause() : play());
+$('prev').onclick = () => { pause(); go(cur - 1); };
+$('next').onclick = () => { pause(); go(cur + 1); };
+$('first').onclick = () => { pause(); go(0); };
+$('last').onclick = () => { pause(); go(clip.nframes - 1); };
+$('seek').oninput = (e) => { pause(); go(+e.target.value); };
+$('zoom').oninput = (e) => setZoom(+e.target.value / 100);
+$('fit').onclick = () => doFit();
+$('export').onclick = () => {
+  const a = document.createElement('a');
+  a.download = 'frame_' + String(cur + 1).padStart(4, '0') + '.png';
+  a.href = cv.toDataURL('image/png');
+  a.click();
+};
+document.addEventListener('keydown', (e) => {
+  if (!clip) return;
+  if (e.code === 'Space') { e.preventDefault(); playing ? pause() : play(); }
+  else if (e.code === 'ArrowLeft') { pause(); go(cur - 1); }
+  else if (e.code === 'ArrowRight') { pause(); go(cur + 1); }
+  else if (e.code === 'Home') { pause(); go(0); }
+  else if (e.code === 'End') { pause(); go(clip.nframes - 1); }
+});
+$('stage').addEventListener('wheel', (e) => {
+  if (!clip) return;
+  e.preventDefault();
+  setZoom(zoom * (e.deltaY < 0 ? 1.12 : 0.89));
+}, { passive: false });
+
+// 整个窗口都能接收拖放
+const st = $('stage');
+window.addEventListener('dragover', (e) => { e.preventDefault(); $('drop').classList.add('hot'); });
+window.addEventListener('dragleave', (e) => { if (e.target === document.documentElement) $('drop').classList.remove('hot'); });
+window.addEventListener('drop', (e) => {
+  e.preventDefault();
+  $('drop').classList.remove('hot');
+  const f = e.dataTransfer.files && e.dataTransfer.files[0];
+  if (f) loadFile(f);
+});
+
+function showBusy(txt) { $('busytxt').textContent = txt; $('busy').classList.add('on'); }
+function hideBusy() { $('busy').classList.remove('on'); }
+function tick0() { return new Promise((r) => setTimeout(r, 0)); }
+
+// ---------------- 调试入口：?url=xxx.swf 直接加载 ----------------
+(function () {
+  const u = new URLSearchParams(location.search).get('url');
+  if (!u) return;
+  fetch(u).then((r) => r.arrayBuffer()).then((b) => {
+    loadFile(new File([b], u.split('/').pop(), { type: 'application/x-shockwave-flash' }));
+  }).catch((e) => console.error(e));
+})();
+</script>
+</body>
+</html>

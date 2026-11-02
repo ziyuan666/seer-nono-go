@@ -1,0 +1,38 @@
+{
+  "key": "super1",
+  "zoom": 4,
+  "canvas": {
+    "w": 227,
+    "h": 327
+  },
+  "dirs": {
+    "down": 17,
+    "leftdown": 17,
+    "left": 17,
+    "leftup": 17,
+    "up": 17,
+    "rightup": 17,
+    "right": 17,
+    "rightdown": 17
+  },
+  "layers": [
+    {
+      "name": "color_1",
+      "dx": 24,
+      "dy": 24,
+      "err": 39.9
+    },
+    {
+      "name": "body",
+      "dx": 0,
+      "dy": 0,
+      "err": 1.68
+    }
+  ],
+  "ball": 99,
+  "idle_frames": 17,
+  "ballc": [
+    112,
+    162
+  ]
+}
